@@ -11,6 +11,11 @@ class App extends React.Component {
     selectedVideo: null
   };
 
+  componentDidMount() {
+    // Default Search term
+    this.onSearchSubmit('Bruno Mars Grenade');
+  }
+
   onSearchSubmit = async (term) => {
     try {
       const response = await youtubeAPI.get('/search', {
@@ -18,7 +23,10 @@ class App extends React.Component {
           q: term
         }
       });
-      this.setState({ videos: response.data.items });
+      this.setState({
+        videos: response.data.items,
+        selectedVideo: response.data.items[0]
+      });
     } catch (err) {
       console.log('Error : ' + err);
     }
@@ -32,11 +40,20 @@ class App extends React.Component {
     return (
       <div className="ui container" style={{ marginTop: '15px' }}>
         <SearchBar onSearchSubmit={this.onSearchSubmit} />
-        <VideoDetails video={this.state.selectedVideo} />
-        <VideoList
-          onVideoSelect={this.onVideoSelect}
-          videos={this.state.videos}
-        />
+        <div className="ui grid">
+          <div className="ui row">
+            <div className="eleven wide column">
+              <VideoDetails video={this.state.selectedVideo} />
+            </div>
+
+            <div className="five wide column">
+              <VideoList
+                onVideoSelect={this.onVideoSelect}
+                videos={this.state.videos}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
